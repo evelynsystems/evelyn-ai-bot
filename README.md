@@ -2,7 +2,8 @@ Public GitHub safe build
 
 Use .env.example as a guide and keep real secrets only on your server.
 
-# Robinhood DCA Bot — Web UI Setup
+# # Evelyn AI Bot — Web UI Setup
+Self hosted AI powered trading assistant with dashboard, portfolio reporting, and automation
 
 ## Files
 - `robinhood_dca_bot.py` — The trading bot
@@ -13,6 +14,29 @@ Use .env.example as a guide and keep real secrets only on your server.
 - `docker-compose.yml`   — TrueNAS app definition
 
 ---
+
+## Quick Start
+
+git clone https://github.com/YOUR_USERNAME/evelyn-ai-bot.git  
+cd evelyn-ai-bot  
+cp .env.example .env  
+docker compose up -d --build  
+
+Open http://localhost:5000
+
+## Features
+
+AI stock analysis  
+Portfolio reporting  
+Email alerts  
+Web dashboard  
+Runs 24 7 locally  
+Docker ready setup  
+
+ADMIN_USERNAME=admin
+EMAIL_USER=your_email
+EMAIL_PASS=your_password
+BROKER=paper
 
 ## Deploying on TrueNAS SCALE
 
