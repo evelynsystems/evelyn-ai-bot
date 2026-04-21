@@ -1,3 +1,6 @@
+Past performance is based on historical data and does not guarantee future results.
+Trading involves risk and you may lose money.
+
 Public GitHub safe build
 
 Use .env.example as a guide and keep real secrets only on your server.
