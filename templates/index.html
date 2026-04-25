@@ -2458,92 +2458,6 @@ function loadPortfolioChart() {
   });
 }
 
-init();
-</script>
-
-<section style="max-width:1100px; margin:30px auto; background:#15181c; border:1px solid #2b3138; border-radius:18px; padding:22px; color:white;">
-  <h2 style="margin-top:0;">Security Center</h2>
-  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px;">
-    <div>
-      <label>Admin Username</label>
-      <input id="sec_admin_username" style="width:100%; padding:10px; margin-top:6px; background:#0f1317; color:white; border:1px solid #39414a; border-radius:10px;">
-    </div>
-    <div>
-      <label>New Admin Password</label>
-      <input id="sec_admin_password" type="password" style="width:100%; padding:10px; margin-top:6px; background:#0f1317; color:white; border:1px solid #39414a; border-radius:10px;">
-    </div>
-    <div>
-      <label>New Live Unlock Code</label>
-      <input id="sec_live_code" type="password" style="width:100%; padding:10px; margin-top:6px; background:#0f1317; color:white; border:1px solid #39414a; border-radius:10px;">
-    </div>
-    <div>
-      <label>Session Timeout, minutes</label>
-      <input id="sec_timeout" type="number" min="15" value="120" style="width:100%; padding:10px; margin-top:6px; background:#0f1317; color:white; border:1px solid #39414a; border-radius:10px;">
-    </div>
-  </div>
-  <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:16px; align-items:center;">
-    <label><input id="sec_auth_enabled" type="checkbox" checked> Require dashboard login</label>
-    <label><input id="sec_allow_remote" type="checkbox"> Allow remote access beyond local network</label>
-    <label><input id="sec_live_status" type="checkbox" disabled> Live trading unlocked</label>
-  </div>
-  <div style="margin-top:16px; display:flex; flex-wrap:wrap; gap:10px;">
-    <button onclick="saveSecuritySettings()" style="padding:11px 16px; border-radius:10px; border:0; background:#1f8cff; color:white; font-weight:700;">Save Security</button>
-    <input id="sec_unlock_input" type="password" placeholder="Enter live unlock code" style="padding:10px; min-width:240px; background:#0f1317; color:white; border:1px solid #39414a; border-radius:10px;">
-    <button onclick="unlockLiveTrading()" style="padding:11px 16px; border-radius:10px; border:0; background:#0d8a4e; color:white; font-weight:700;">Unlock Live Trading</button>
-    <button onclick="lockLiveTrading()" style="padding:11px 16px; border-radius:10px; border:0; background:#8a1d1d; color:white; font-weight:700;">Lock Live Trading</button>
-  </div>
-  <div id="securityMsg" style="margin-top:14px; color:#9fc5ff;"></div>
-</section>
-<script>
-async function loadSecurityStatus() {
-  try {
-    const r = await fetch('/api/security/status');
-    const data = await r.json();
-    if (!data.ok) return;
-    document.getElementById('sec_admin_username').value = data.admin_username || 'admin';
-    document.getElementById('sec_auth_enabled').checked = !!data.auth_enabled;
-    document.getElementById('sec_allow_remote').checked = !!data.allow_remote_access;
-    document.getElementById('sec_live_status').checked = !!data.live_trading_unlocked;
-    document.getElementById('sec_timeout').value = data.session_timeout_minutes || 120;
-  } catch (e) {}
-}
-
-async function saveSecuritySettings() {
-  const payload = {
-    new_admin_username: document.getElementById('sec_admin_username').value,
-    new_admin_password: document.getElementById('sec_admin_password').value,
-    new_live_unlock_code: document.getElementById('sec_live_code').value,
-    auth_enabled: document.getElementById('sec_auth_enabled').checked,
-    allow_remote_access: document.getElementById('sec_allow_remote').checked,
-    session_timeout_minutes: parseInt(document.getElementById('sec_timeout').value || '120', 10)
-  };
-  const r = await fetch('/api/security/config', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
-  const data = await r.json();
-  document.getElementById('securityMsg').textContent = data.ok ? 'Security settings saved.' : (data.msg || 'Save failed');
-  loadSecurityStatus();
-}
-
-async function unlockLiveTrading() {
-  const code = document.getElementById('sec_unlock_input').value;
-  const r = await fetch('/api/security/unlock_live', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({code})});
-  const data = await r.json();
-  document.getElementById('securityMsg').textContent = data.ok ? 'Live trading unlocked.' : (data.msg || 'Unlock failed');
-  loadSecurityStatus();
-}
-
-async function lockLiveTrading() {
-  const r = await fetch('/api/security/lock_live', {method:'POST'});
-  const data = await r.json();
-  document.getElementById('securityMsg').textContent = data.ok ? 'Live trading locked.' : (data.msg || 'Lock failed');
-  loadSecurityStatus();
-}
-
-document.addEventListener('DOMContentLoaded', () => { setTimeout(loadSecurityStatus, 600); });
-</script>
-
-</body>
-</html>
-
 
 async function loadPowerPack() {
   try {
@@ -2588,3 +2502,39 @@ async function sendTestAlert() {
   const d = await r.json();
   toast(d.msg || (d.ok ? 'Test alert sent' : 'Failed'), d.ok ? 'ok' : 'err');
 }
+
+async function saveSecuritySettings() {
+  const payload = {
+    new_admin_username: document.getElementById('sec_admin_username').value,
+    new_admin_password: document.getElementById('sec_admin_password').value,
+    new_live_unlock_code: document.getElementById('sec_live_code').value,
+    auth_enabled: document.getElementById('sec_auth_enabled').checked,
+    allow_remote_access: document.getElementById('sec_allow_remote').checked,
+    session_timeout_minutes: parseInt(document.getElementById('sec_timeout').value || '120', 10)
+  };
+  const r = await fetch('/api/security/config', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+  const data = await r.json();
+  document.getElementById('securityMsg').textContent = data.ok ? 'Security settings saved.' : (data.msg || 'Save failed');
+  loadSecurityStatus();
+}
+
+async function unlockLiveTrading() {
+  const code = document.getElementById('sec_unlock_input').value;
+  const r = await fetch('/api/security/unlock_live', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({code})});
+  const data = await r.json();
+  document.getElementById('securityMsg').textContent = data.ok ? 'Live trading unlocked.' : (data.msg || 'Unlock failed');
+  loadSecurityStatus();
+}
+
+async function lockLiveTrading() {
+  const r = await fetch('/api/security/lock_live', {method:'POST'});
+  const data = await r.json();
+  document.getElementById('securityMsg').textContent = data.ok ? 'Live trading locked.' : (data.msg || 'Lock failed');
+  loadSecurityStatus();
+}
+
+document.addEventListener('DOMContentLoaded', () => { setTimeout(loadSecurityStatus, 600); });
+</script>
+
+</body>
+</html>
